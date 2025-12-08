@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from src.database.models_base import Base
 from src.database.models_dimension import Location, Indicator
 from src.database.models_fact import TBOutcomeFact
+from src.database.models_metadata import IngestionLog, DataSource
 
 # 1. Configure database URL
 # Example environment variable DATABASE_URL
