@@ -31,7 +31,7 @@ class LocationTransformer:
         Yields:
             LocationRecord instances
         """
-        # Select relevant columns and drop duplicates
+        # Duplicate by (country, iso3, iso2, iso_numeric)
         cols = ["country", "iso2", "iso3", "iso_numeric", "g_whoregion"]
         existing_cols = [c for c in cols if c in df.columns]
         

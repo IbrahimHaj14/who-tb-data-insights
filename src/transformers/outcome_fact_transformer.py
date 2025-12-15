@@ -77,10 +77,10 @@ class OutcomeFactTransformer:
         id_cols = ["country", "iso2", "iso3", "iso_numeric", "g_whoregion", "year", "rep_meth"]
         id_cols = [c for c in id_cols if c in df.columns]
         
-        # Identify flag columns to EXCLUDE from melting (keep as metadata)
+        # Identify flag columns to EXCLUDE 
         flag_cols = [c for c in df.columns if c.endswith("_flg") or "flag" in c.lower()]
         
-        # Identify computed/inferred columns to exclude
+        #Exclude
         computed_cols = [c for c in df.columns if c.startswith("inferred_") or c.startswith("missing_") 
                         or c.endswith("_recomputed") or c == "data_completeness_score"]
         
@@ -112,13 +112,13 @@ class OutcomeFactTransformer:
         # Drop rows where value is NA (missing = no data)
         melted = melted[melted["value"].notna()].copy()
         
-        # Convert value to numeric, coercing errors
+        # Convert value to numeric
         melted["value"] = pd.to_numeric(melted["value"], errors="coerce")
         melted = melted[melted["value"].notna()].copy()
         
         logger.info("After filtering NAs: %d fact records", len(melted))
         
-        # Resolve location_id from iso3
+        # Find location_id from iso3
         melted["location_id"] = melted["iso3"].map(self.location_map)
         missing_locs = melted[melted["location_id"].isna()]
         if not missing_locs.empty:
@@ -132,7 +132,7 @@ class OutcomeFactTransformer:
         melted = melted[melted["location_id"].notna()].copy()
         melted["location_id"] = melted["location_id"].astype(int)
         
-        # Resolve indicator_id from variable_name
+        # Find indicator_id from variable_name
         melted["indicator_id"] = melted["variable_name"].map(self.indicator_map)
         missing_inds = melted[melted["indicator_id"].isna()]
         if not missing_inds.empty:
@@ -151,7 +151,7 @@ class OutcomeFactTransformer:
         for _, row in melted.iterrows():
             try:
                 flags = {}
-                # Preserve flags from original cleaning
+                # Keep flags from original cleaning
                 if "flags" in row and pd.notna(row["flags"]):
                     flags = eval(row["flags"]) if isinstance(row["flags"], str) else row["flags"]
                 
@@ -220,6 +220,6 @@ class OutcomeFactTransformer:
                 non_zero = sum(1 for v in values if v != 0)
                 logger.info("Non-zero values: %d / %d (%.1f%%)", non_zero, len(values), non_zero/len(values)*100)
                 if non_zero == 0:
-                    logger.warning("⚠️  All values are zero - possible data issue!")
+                    logger.warning("All values are zero - possible data issue!")
         
         return summary

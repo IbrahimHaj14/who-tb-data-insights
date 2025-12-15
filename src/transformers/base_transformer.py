@@ -154,7 +154,7 @@ class BaseTransformer(ABC):
         """
         issue = {"message": message}
         if sample is not None:
-            issue["sample"] = str(sample)[:200]  # Truncate long samples
+            issue["sample"] = str(sample)[:200] 
         self.issues.append(issue)
         logger.warning(message)
 
@@ -206,7 +206,7 @@ class BaseTransformer(ABC):
             "records_in": self.records_in,
             "records_out": len(valid_records),
             "issues_count": len(self.issues),
-            "issues": self.issues[:10] if self.issues else [],  # First 10 issues
+            "issues": self.issues[:10] if self.issues else [],  
         }
         
         logger.info("Completed %s: %d -> %d records", self.__class__.__name__, self.records_in, len(valid_records))
