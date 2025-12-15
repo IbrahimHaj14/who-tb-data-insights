@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Optional, Dict, Any
+import math
 
 from pydantic import BaseModel, Field, validator
 
@@ -88,12 +89,19 @@ def location_from_row(row: Dict[str, Any]) -> LocationRecord:
 
     Expects keys like `country`, `iso2`, `iso3`, `iso_numeric`, `g_whoregion`.
     """
+    def _none_if_nan(v: Any) -> Optional[str]:
+        if v is None:
+            return None
+        if isinstance(v, float) and math.isnan(v):
+            return None
+        return v
+
     return LocationRecord(
         country=row.get("country"),
-        iso2=row.get("iso2"),
-        iso3=row.get("iso3"),
+        iso2=_none_if_nan(row.get("iso2")),
+        iso3=_none_if_nan(row.get("iso3")),
         iso_numeric=_safe_int(row.get("iso_numeric")),
-        who_region=row.get("g_whoregion") or row.get("who_region") or None,
+        who_region=_none_if_nan(row.get("g_whoregion")) or _none_if_nan(row.get("who_region")) or None,
     )
 
 
@@ -102,11 +110,18 @@ def indicator_from_dict(d: Dict[str, Any]) -> IndicatorRecord:
 
     Expects keys `variable_name`, `dataset`, `definition`, `code_list`.
     """
+    def _code_list_clean(val: Any) -> Optional[str]:
+        if val is None:
+            return None
+        if isinstance(val, float) and math.isnan(val):
+            return None
+        return str(val)
+
     return IndicatorRecord(
         variable_name=d.get("variable_name") or d.get("variable") or d.get("variableName"),
         dataset_group=d.get("dataset") or None,
         definition=d.get("definition") or None,
-        code_list=d.get("code_list") or d.get("code list") or None,
+        code_list=_code_list_clean(d.get("code_list") or d.get("code list")),
     )
 
 

@@ -1,7 +1,7 @@
-from src.data_cleaning.load_raw import TBDataLoader
+from src.data_cleaning.extract_raw import TBDataExtractor
 
 if __name__ == "__main__":
-    loader = TBDataLoader("tb_outcomes.csv")  
+    loader = TBDataExtractor("tb_outcomes.csv")  
     df = loader.load()
 
     print(df.tail(70))

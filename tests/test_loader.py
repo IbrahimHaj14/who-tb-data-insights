@@ -2,7 +2,7 @@ import os
 import pytest
 import pandas as pd
 from tempfile import NamedTemporaryFile
-from src.data_cleaning.load_raw import TBDataLoader
+from src.data_cleaning.extract_raw import TBDataExtractor
 
 
 # Fixture: create a temporary CSV
@@ -28,14 +28,14 @@ def temp_csv_file():
 
 #file not found test
 def test_load_missing_file():
-    loader = TBDataLoader("nonexistent.csv")
+    loader = TBDataExtractor("nonexistent.csv")
     with pytest.raises(FileNotFoundError):
         loader.load()
 
 
 # Test normal loading
 def test_load_valid_file(temp_csv_file):
-    class TestLoader(TBDataLoader):
+    class TestLoader(TBDataExtractor):
         EXPECTED_COLUMNS = ["country", "iso2", "iso3", "iso_numeric", "g_whoregion", "year", "rep_meth", "new_sp_coh", "new_sp_cur"]
 
 
@@ -62,7 +62,7 @@ def test_missing_columns():
         df.to_csv(f.name, index=False)
         temp_path = f.name
 
-    loader = TBDataLoader(os.path.basename(temp_path))
+    loader = TBDataExtractor(os.path.basename(temp_path))
     loader.filepath = temp_path
 
    # test missing columns detected

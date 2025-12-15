@@ -4,7 +4,7 @@ from pandas._libs import missing
 
 RAW_DATA_DIR = "data/raw"
 
-class TBDataLoader:
+class TBDataExtractor:
     """
     Handles loading raw WHO TB Outcomes CSV files.
     - Verifies file existence
