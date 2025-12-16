@@ -31,8 +31,6 @@ logger = logging.getLogger(__name__)
 def build_location_map(locations_csv: str) -> Dict[str, int]:
     """Build mapping from iso3 -> location_id by reading locations CSV.
     
-    For now, uses row index as location_id. In production, would query database.
-    
     Args:
         locations_csv: Path to locations output CSV
         
@@ -46,16 +44,14 @@ def build_location_map(locations_csv: str) -> Dict[str, int]:
         return {}
     
     df = pd.read_csv(locations_csv)
-    # Use row index as location_id (surrogate key, 0-based matching CSV row numbers)
-    location_map = dict(zip(df["iso3"], df.index))
+    # Use 1-based row index as location_id (matching DB auto-increment)
+    location_map = dict(zip(df["iso3"], df.index + 1))
     logger.info("Built location_map with %d entries", len(location_map))
     return location_map
 
 
 def build_indicator_map(indicators_csv: str) -> Dict[str, int]:
     """Build mapping from variable_name -> indicator_id by reading indicators CSV.
-    
-    For now, uses row index as indicator_id. In production, would query database.
     
     Args:
         indicators_csv: Path to indicators output CSV
@@ -70,8 +66,8 @@ def build_indicator_map(indicators_csv: str) -> Dict[str, int]:
         return {}
     
     df = pd.read_csv(indicators_csv)
-    # Use row index as indicator_id (surrogate key, 0-based matching CSV row numbers)
-    indicator_map = dict(zip(df["variable_name"], df.index))
+    # Use 1-based row index as indicator_id 
+    indicator_map = dict(zip(df["variable_name"], df.index + 1))
     logger.info("Built indicator_map with %d entries", len(indicator_map))
     return indicator_map
 
@@ -98,21 +94,21 @@ def run_pipeline(
     
     results = {}
     
-    # Step 1: Transform locations
+    #Transform locations
     logger.info("\n=== Step 1: LocationTransformer ===")
     loc_transformer = LocationTransformer(output_dir=output_dir)
     loc_result = loc_transformer.run(cleaned_csv)
     results["locations"] = loc_result
     logger.info("Locations: %d records written", loc_result.get("records_out", 0))
     
-    # Step 2: Transform indicators
+    # Transform indicators
     logger.info("\n=== Step 2: IndicatorTransformer ===")
     ind_transformer = IndicatorTransformer(output_dir=output_dir)
     ind_result = ind_transformer.run(dict_csv)
     results["indicators"] = ind_result
     logger.info("Indicators: %d records written", ind_result.get("records_out", 0))
     
-    # Step 3: Build FK maps from steps 1-2
+    # Build FK maps for outcome facts
     logger.info("\n=== Step 3: Building Foreign Key Maps ===")
     location_map = build_location_map(loc_transformer.output_path())
     indicator_map = build_indicator_map(ind_transformer.output_path())
@@ -127,7 +123,7 @@ def run_pipeline(
         results["facts"] = {"error": "missing indicator_map"}
         return results
     
-    # Step 4: Transform outcome facts with FK resolution
+    # Transform outcome facts with FK
     logger.info("\n=== Step 4: OutcomeFactTransformer ===")
     fact_transformer = OutcomeFactTransformer(
         output_dir=output_dir,
