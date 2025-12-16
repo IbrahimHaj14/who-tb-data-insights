@@ -34,7 +34,7 @@ class IndicatorTransformer:
         # Normalize column names
         df.columns = [col.strip().lower() for col in df.columns]
         
-        # Deduplicate by variable_name
+        # Check for variable_name column
         if "variable_name" not in df.columns:
             logger.error("variable_name column not found in data dictionary")
             return

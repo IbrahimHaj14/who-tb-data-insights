@@ -21,7 +21,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///tb_outcomes.db")
 # Create engine
 engine = create_engine(
     DATABASE_URL,
-    echo=False,          # disable SQL output; enable for debugging
+    echo=False,         
     future=True
 )
 
