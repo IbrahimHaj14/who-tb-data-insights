@@ -45,10 +45,6 @@ ENV/
 # macOS
 .DS_Store
 
-# Logs and databases
-*.log
-*.sqlite3
-*.db
 
 # Sensitive files
 .env
