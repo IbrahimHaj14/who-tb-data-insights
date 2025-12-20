@@ -50,17 +50,14 @@ def clean_tb_outcomes(
     logger.info("Loading raw data from %s", raw_path)
     # Use TBDataExtractor to load the data
     df = None
-    #try:
+
     filename = os.path.basename(raw_path)
     loader = TBDataExtractor(filename)
     df = loader.load()
 
     df = df.replace(NA_VALUES, pd.NA)
     logger.info("Loaded raw data using TBDataExtractor")
-    #except Exception as exc:  
-        # logger.info("TBDataLoader unavailable or failed (%s). Falling back to pandas.read_csv", exc)
-        # df = pd.read_csv(raw_path, na_values=NA_VALUES, keep_default_na=True, dtype=str)
-
+    
     #strip whitespace from string columns
     df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 

@@ -9,9 +9,6 @@ from pydantic import BaseModel, Field, validator
 
 class LocationRecord(BaseModel):
     """Structured Data Object for a location/dimension row.
-
-    Fields mirror the proposed dataclass in your design. Kept simple so it can
-    be resolved to a dimension table (surrogate key assigned during ingest).
     """
 
     country: str
@@ -29,9 +26,6 @@ class LocationRecord(BaseModel):
 
 class IndicatorRecord(BaseModel):
     """Structured Data Object for an indicator/variable.
-
-    This maps a variable name from the data dictionary into a compact record
-    that can be stored in an indicator dimension.
     """
 
     variable_name: str
@@ -47,10 +41,7 @@ class IndicatorRecord(BaseModel):
 
 
 class OutcomeFactRecord(BaseModel):
-    """Structured Data Object representing a single fact (long/tidy).
-
-    The ingest pipeline is expected to resolve `location_id` and
-    `indicator_id` (surrogate integer keys) before inserting into a database.
+    """Structured Data Object representing a single fact (long format).
     """
 
     location_id: int
@@ -87,7 +78,7 @@ class OutcomeFactRecord(BaseModel):
 def location_from_row(row: Dict[str, Any]) -> LocationRecord:
     """Create LocationRecord from a cleaned row dict/series.
 
-    Expects keys like `country`, `iso2`, `iso3`, `iso_numeric`, `g_whoregion`.
+    keys `country`, `iso2`, `iso3`, `iso_numeric`, `g_whoregion`.
     """
     def _none_if_nan(v: Any) -> Optional[str]:
         if v is None:
@@ -108,7 +99,7 @@ def location_from_row(row: Dict[str, Any]) -> LocationRecord:
 def indicator_from_dict(d: Dict[str, Any]) -> IndicatorRecord:
     """Create IndicatorRecord from a dictionary row (eg. from data dictionary CSV).
 
-    Expects keys `variable_name`, `dataset`, `definition`, `code_list`.
+     keys `variable_name`, `dataset`, `definition`, `code_list`.
     """
     def _code_list_clean(val: Any) -> Optional[str]:
         if val is None:

@@ -72,6 +72,7 @@ streamlit run frontend/Dashboard.py
 
 The application will open in your browser at `http://localhost:8501`
 
+
 ### Navigation
 
 The application has two main pages:
