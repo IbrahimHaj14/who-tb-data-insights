@@ -8,7 +8,7 @@ A full data pipeline and insights platform for analyzing WHO tuberculosis treatm
   - Data extraction and validation
   - Cleaning with imputation logging
   - DB schema transformation (locations, indicators, facts)
-  - Bulk database insertion with upsert capabilities
+  - Bulk batch database insertion with upsert 
 
 - **Interactive Dashboard**: Streamlit-based web application
   - Filter by WHO region, country, indicator, and year range
